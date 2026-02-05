@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { RoomServiceClient } from "livekit-server-sdk";
+import { RoomServiceClient, AccessToken } from "livekit-server-sdk";
 
 dotenv.config();
 
@@ -55,4 +55,39 @@ app.post("/create-room", async (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`backend running on port ${PORT}`);
+});
+
+app.post("/token", async (req, res) => {
+  const { roomName, identity } = req.body;
+
+  if (!roomName || !identity) {
+    return res.status(400).json({
+      error: "roomName and identity are required",
+    });
+  }
+
+  try {
+    const token = new AccessToken(
+      process.env.LIVEKIT_API_KEY,
+      process.env.LIVEKIT_API_SECRET,
+      {
+        identity: identity,
+        ttl: 60 * 30, // 30 minutes
+      }
+    );
+
+    token.addGrant({
+      roomJoin: true,
+      room: roomName,
+      canPublish: true,
+      canSubscribe: true,
+    });
+
+    const jwt = await token.toJwt();
+
+    res.json({ token: jwt });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "failed to generate token" });
+  }
 });
