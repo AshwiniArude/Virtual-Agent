@@ -1,0 +1,17 @@
+{
+  "name": "voice-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node agent.js dev",
+    "start": "node agent.js start",
+    "download-files": "node agent.js download-files"
+  },
+  "dependencies": {
+    "@livekit/agents": "^1.0.0",
+    "@livekit/agents-plugin-silero": "^1.0.0",
+    "@livekit/agents-plugin-livekit": "^1.0.0",
+    "@livekit/noise-cancellation-node": "^0.1.0",
+    "dotenv": "^16.4.5"
+  }
+}
